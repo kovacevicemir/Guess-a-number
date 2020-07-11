@@ -1,36 +1,55 @@
-import { StatusBar } from 'expo-status-bar';
-import React, {useState} from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
 
-import Header from './components/Header'
-import StartGameScreen from './screens/StartGameScreen'
-import GameScreen from './screens/GameScreen'
-
-
+import Header from "./components/Header";
+import StartGameScreen from "./screens/StartGameScreen";
+import GameScreen from "./screens/GameScreen";
+import GameOverScreen from "./screens/GameOverScreen";
 
 export default function App() {
-  const [userNumber, setUserNumber] = useState()
-  
-  const startGameHandler = (selectedNumber) => {
-    setUserNumber(selectedNumber)
-  }
-  
-  let content = <StartGameScreen startGameHandler={startGameHandler} />
+  const [userNumber, setUserNumber] = useState();
+  const [guessRounds, setGuessRounds] = useState(0);
 
-  if(userNumber){
-    content = <GameScreen userChoice={userNumber}/>
+  const configureNewGameHandler = () => {
+    setGuessRounds(0);
+    setUserNumber(null);
+  };
+
+  const startGameHandler = (selectedNumber) => {
+    setUserNumber(selectedNumber);
+  };
+
+  const gameOverHandler = (numOfRounds) => {
+    setGuessRounds(numOfRounds);
+  };
+
+  let content = <StartGameScreen startGameHandler={startGameHandler} />;
+
+  if (userNumber && guessRounds <= 0) {
+    content = (
+      <GameScreen onGameOver={gameOverHandler} userChoice={userNumber} />
+    );
+  } else if (guessRounds > 0) {
+    content = (
+      <GameOverScreen
+        onRestart={configureNewGameHandler}
+        roundsNumber={guessRounds}
+        userNumber={userNumber}
+      />
+    );
   }
 
   return (
     <View style={styles.screen}>
-      <Header title='Guess a Number' />
+      <Header title="Guess a Number" />
       {content}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen:{
-    flex:1
-  }
+  screen: {
+    flex: 1,
+  },
 });
